@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: my-bookshelf
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: ADMIN_PASSWORD
+        generateValue: false
+        value: changeme123
+    disk:
+      name: data
+      mountPath: /opt/render/project/src
+      sizeGB: 1

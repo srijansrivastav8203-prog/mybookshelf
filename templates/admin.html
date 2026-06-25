@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add a Book — Admin</title>
+<style>
+  :root {
+    --ink: #1a1a18;
+    --muted: #6b6b62;
+    --bg: #faf8f4;
+    --surface: #ffffff;
+    --border: rgba(26,26,24,0.12);
+    --teal: #0f6e56;
+    --teal-light: #e1f5ee;
+    --danger: #993C1D;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+  .wrap { max-width: 540px; margin: 0 auto; }
+  .back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--muted); text-decoration: none;
+    margin-bottom: 2rem;
+  }
+  .back:hover { color: var(--teal); }
+  h1 {
+    font-family: 'Georgia', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .subtitle { font-size: 13px; color: var(--muted); margin-bottom: 2rem; }
+
+  /* card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .section-title {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 1.1rem;
+  }
+
+  /* fields */
+  .field { margin-bottom: 1.1rem; }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--ink);
+  }
+  label span { font-weight: 400; color: var(--muted); }
+  input[type=text], input[type=number], input[type=password], select, textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--teal); }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* stars */
+  .star-row { display: flex; gap: 6px; }
+  .star-btn {
+    font-size: 22px;
+    background: none; border: none; cursor: pointer;
+    color: #d0cfc8;
+    padding: 0;
+    transition: color 0.1s;
+    line-height: 1;
+  }
+  .star-btn.on { color: #EF9F27; }
+
+  /* file drop */
+  .file-drop {
+    border: 1.5px dashed var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+  }
+  .file-drop:hover, .file-drop.over { border-color: var(--teal); background: var(--teal-light); }
+  .file-drop input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .file-drop-icon { font-size: 28px; margin-bottom: 6px; }
+  .file-drop p { font-size: 13px; color: var(--muted); }
+  .file-drop p strong { color: var(--teal); }
+  .file-name {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--teal);
+    font-weight: 600;
+    display: none;
+  }
+
+  /* submit */
+  .btn-submit {
+    width: 100%;
+    padding: 12px;
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .btn-submit:hover { background: #085041; }
+  .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* messages */
+  .msg {
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-top: 1rem;
+    display: none;
+  }
+  .msg.success { background: var(--teal-light); color: var(--teal); }
+  .msg.error { background: #FAECE7; color: var(--danger); }
+
+  /* book list */
+  .book-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+  }
+  .book-item:last-child { border-bottom: none; }
+  .book-item-title { font-size: 14px; font-weight: 600; }
+  .book-item-author { font-size: 12px; color: var(--muted); }
+  .del-btn {
+    background: none; border: 1px solid var(--border); border-radius: 3px;
+    padding: 4px 10px; font-size: 12px; color: var(--danger);
+    cursor: pointer; flex-shrink: 0;
+  }
+  .del-btn:hover { background: #FAECE7; border-color: var(--danger); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← Back to shelf</a>
+  <h1>Add a book</h1>
+  <p class="subtitle">Only you can see this page. Upload your PDF and notes.</p>
+
+  <!-- password -->
+  <div class="card" id="pw-card">
+    <div class="section-title">Admin password</div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="pw" placeholder="Enter your admin password">
+    </div>
+    <button class="btn-submit" onclick="verifyPw()">Unlock</button>
+    <div class="msg error" id="pw-err">Wrong password.</div>
+  </div>
+
+  <div id="main" style="display:none">
+    <div class="card">
+      <div class="section-title">Book details</div>
+      <div class="row">
+        <div class="field">
+          <label>Title *</label>
+          <input type="text" id="title" placeholder="e.g. Atomic Habits">
+        </div>
+        <div class="field">
+          <label>Author *</label>
+          <input type="text" id="author" placeholder="e.g. James Clear">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Genre <span>(optional)</span></label>
+          <input type="text" id="genre" placeholder="e.g. Self-help">
+        </div>
+        <div class="field">
+          <label>Year read <span>(optional)</span></label>
+          <input type="number" id="year" placeholder="2024" min="1900" max="2099">
+        </div>
+      </div>
+      <div class="field">
+        <label>My rating <span>(optional)</span></label>
+        <div class="star-row" id="stars">
+          <button class="star-btn" data-v="1">★</button>
+          <button class="star-btn" data-v="2">★</button>
+          <button class="star-btn" data-v="3">★</button>
+          <button class="star-btn" data-v="4">★</button>
+          <button class="star-btn" data-v="5">★</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>My review / notes <span>(optional)</span></label>
+        <textarea id="review" placeholder="What did you think? Key takeaways, favourite quotes…"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">PDF upload <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;color:var(--muted)">(optional)</span></div>
+      <div class="file-drop" id="drop-zone">
+        <input type="file" id="pdf-file" accept=".pdf" onchange="onFileChange(this)">
+        <div class="file-drop-icon">📄</div>
+        <p><strong>Click to upload</strong> or drag & drop</p>
+        <p>PDF only · max 50 MB</p>
+        <div class="file-name" id="file-name"></div>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="submit-btn" onclick="submitBook()">Add to shelf</button>
+    <div class="msg" id="msg"></div>
+
+    <!-- existing books -->
+    <div class="card" style="margin-top:2rem">
+      <div class="section-title">Books on your shelf</div>
+      <div id="book-list"><p style="font-size:14px;color:var(--muted)">Loading…</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let pw = '';
+let rating = 0;
+
+// stars
+document.querySelectorAll('.star-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    rating = parseInt(btn.dataset.v);
+    document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('on', parseInt(b.dataset.v) <= rating));
+  });
+});
+
+// drag-drop
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('over');
+  const files = e.dataTransfer.files;
+  if (files[0]?.name.toLowerCase().endsWith('.pdf')) {
+    document.getElementById('pdf-file').files = files;
+    onFileChange({ files });
+  }
+});
+
+function onFileChange(inp) {
+  const fn = document.getElementById('file-name');
+  if (inp.files[0]) {
+    fn.textContent = '✓ ' + inp.files[0].name;
+    fn.style.display = 'block';
+  }
+}
+
+async function verifyPw() {
+  pw = document.getElementById('pw').value;
+  const res = await fetch('/api/books', { headers: { 'X-Admin-Password': pw } });
+  if (res.ok) {
+    document.getElementById('pw-card').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+    loadBooks();
+  } else {
+    document.getElementById('pw-err').style.display = 'block';
+  }
+}
+
+async function loadBooks() {
+  const res = await fetch('/api/books');
+  const books = await res.json();
+  const list = document.getElementById('book-list');
+  if (!books.length) { list.innerHTML = '<p style="font-size:14px;color:var(--muted)">No books yet.</p>'; return; }
+  list.innerHTML = books.map(b => `
+    <div class="book-item">
+      <div>
+        <div class="book-item-title">${esc(b.title)}</div>
+        <div class="book-item-author">${esc(b.author)} ${b.year_read ? '· ' + b.year_read : ''}</div>
+      </div>
+      <button class="del-btn" onclick="delBook('${b.id}')">Delete</button>
+    </div>
+  `).join('');
+}
+
+async function delBook(id) {
+  if (!confirm('Delete this book?')) return;
+  await fetch('/api/books/' + id, { method: 'DELETE', headers: { 'X-Admin-Password': pw } });
+  loadBooks();
+}
+
+async function submitBook() {
+  const title = document.getElementById('title').value.trim();
+  const author = document.getElementById('author').value.trim();
+  if (!title || !author) { showMsg('Title and author are required.', 'error'); return; }
+
+  const fd = new FormData();
+  fd.append('password', pw);
+  fd.append('title', title);
+  fd.append('author', author);
+  fd.append('genre', document.getElementById('genre').value.trim());
+  fd.append('year_read', document.getElementById('year').value.trim());
+  fd.append('review', document.getElementById('review').value.trim());
+  fd.append('rating', rating);
+  const pdfFile = document.getElementById('pdf-file').files[0];
+  if (pdfFile) fd.append('pdf', pdfFile);
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const res = await fetch('/api/books', { method: 'POST', body: fd });
+  btn.disabled = false;
+  btn.textContent = 'Add to shelf';
+
+  if (res.ok) {
+    showMsg('Book added! 🎉', 'success');
+    ['title','author','genre','year','review'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('file-name').style.display = 'none';
+    rating = 0;
+    document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('on'));
+    loadBooks();
+  } else {
+    const err = await res.json();
+    showMsg(err.error || 'Something went wrong.', 'error');
+  }
+}
+
+function showMsg(text, type) {
+  const m = document.getElementById('msg');
+  m.textContent = text;
+  m.className = 'msg ' + type;
+  m.style.display = 'block';
+  setTimeout(() => m.style.display = 'none', 4000);
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
