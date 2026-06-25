@@ -1,81 +1,321 @@
-# 📚 My Reading Shelf
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Srijan's Reading Shelf</title>
+<style>
+  :root {
+    --ink: #1a1a18;
+    --muted: #6b6b62;
+    --bg: #faf8f4;
+    --surface: #ffffff;
+    --border: rgba(26,26,24,0.1);
+    --teal: #0f6e56;
+    --teal-light: #e1f5ee;
+    --accent2: #993C1D;
+    --accent3: #185FA5;
+    --accent4: #633806;
+    --accent5: #534AB7;
+    --accent6: #993556;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Georgia', serif;
+    min-height: 100vh;
+  }
+  header {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 2rem;
+    text-align: center;
+  }
+  .avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    letter-spacing: -1px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+  header h1 {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 0.3rem;
+  }
+  .subtitle {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: var(--teal);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 1.1rem;
+  }
+  .intro {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.75;
+    max-width: 520px;
+    margin: 0 auto 1.75rem;
+    font-style: italic;
+  }
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--teal);
+    line-height: 1;
+  }
+  .stat-lbl {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .filters {
+    max-width: 800px;
+    margin: 1.5rem auto 0;
+    padding: 0 1.5rem;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 4px;
+  }
+  .pill {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .pill:hover { border-color: var(--teal); color: var(--teal); }
+  .pill.active { background: var(--teal); color: #fff; border-color: var(--teal); }
+  .grid {
+    max-width: 800px;
+    margin: 2rem auto 4rem;
+    padding: 0 1.5rem;
+    display: grid;
+    gap: 1rem;
+  }
+  .book-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .book-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .spine { width: 6px; flex-shrink: 0; }
+  .card-body { padding: 1.1rem 1.25rem; flex: 1; min-width: 0; }
+  .card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .genre-tag {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--teal-light);
+    color: var(--teal);
+    font-weight: 600;
+  }
+  .year-tag {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .book-title { font-size: 1.1rem; font-weight: 700; line-height: 1.25; margin-bottom: 2px; }
+  .book-author { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .stars { color: #EF9F27; font-size: 14px; margin-bottom: 8px; letter-spacing: 1px; }
+  .book-review {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-footer { margin-top: 12px; display: flex; align-items: center; gap: 10px; }
+  .pdf-btn {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 6px 16px;
+    border-radius: 3px;
+    background: var(--teal);
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .pdf-btn:hover { background: #085041; }
+  .pdf-btn svg { width: 13px; height: 13px; }
+  .empty {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--muted);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+  }
+  .empty big { display: block; font-size: 2.5rem; margin-bottom: 1rem; }
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--teal); text-decoration: none; }
+</style>
+</head>
+<body>
 
-A personal site to showcase books you've read, with PDF uploads, reviews, star ratings, and genre filtering.
+<header>
+  <div class="avatar">SS</div>
+  <div class="subtitle">Srijan's Reading Shelf</div>
+  <h1>Books that shaped me</h1>
+  <p class="intro">I'm Srijan Srivastav — a developer with a love for ideas. I read mostly tech and philosophy: books that help me think more clearly, build better things, and understand the world a little deeper. This is my personal collection of reads, complete with notes and highlights.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num" id="total-count">—</div><div class="stat-lbl">Books read</div></div>
+    <div class="stat"><div class="stat-num" id="genre-count">—</div><div class="stat-lbl">Genres</div></div>
+    <div class="stat"><div class="stat-num" id="year-count">—</div><div class="stat-lbl">Years</div></div>
+  </div>
+</header>
 
----
+<div class="filters" id="filters">
+  <span class="filter-label">Filter:</span>
+  <button class="pill active" data-filter="all">All</button>
+</div>
 
-## Project structure
+<main class="grid" id="grid"></main>
 
-```
-bookshelf/
-├── app.py              ← Flask backend
-├── requirements.txt    ← Python dependencies
-├── render.yaml         ← Render.com deployment config
-├── books.json          ← Auto-created when you add books
-├── uploads/            ← PDF files stored here
-└── templates/
-    ├── index.html      ← Public shelf page (link this in your Instagram bio)
-    └── admin.html      ← Your private upload page
-```
+<footer>Srijan Srivastav · built with curiosity · <a href="/admin">add a book</a></footer>
 
----
+<script>
+const SPINE_COLORS = ['#0f6e56','#993C1D','#185FA5','#633806','#534AB7','#993556','#3B6D11','#A32D2D'];
+let allBooks = [];
 
-## How to deploy (free on Render.com)
+async function load() {
+  const res = await fetch('/api/books');
+  allBooks = await res.json();
+  buildFilters();
+  renderStats();
+  renderBooks(allBooks);
+}
 
-### Step 1 — Put the code on GitHub
-1. Create a free account at github.com
-2. Create a new repository (e.g. `my-bookshelf`)
-3. Upload all these files to it (drag & drop in the GitHub UI, or use Git)
+function buildFilters() {
+  const genres = [...new Set(allBooks.map(b => b.genre).filter(Boolean))];
+  const container = document.getElementById('filters');
+  genres.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = 'pill';
+    btn.textContent = g;
+    btn.dataset.filter = g;
+    container.appendChild(btn);
+  });
+  container.querySelectorAll('.pill').forEach(p => p.onclick = () => setFilter(p.dataset.filter));
+}
 
-### Step 2 — Deploy on Render
-1. Go to **render.com** and sign up for free
-2. Click **New → Web Service**
-3. Connect your GitHub repo
-4. Render will auto-detect the settings from `render.yaml`
-5. Before deploying, go to **Environment** and set:
-   - `ADMIN_PASSWORD` → choose a strong password (only you will use this)
-6. Click **Deploy** — it takes ~2 minutes
+function setFilter(f) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.filter === f));
+  const filtered = f === 'all' ? allBooks : allBooks.filter(b => b.genre === f);
+  renderBooks(filtered);
+}
 
-### Step 3 — Get your URL
-Render gives you a free URL like `https://my-bookshelf.onrender.com`
+function renderStats() {
+  document.getElementById('total-count').textContent = allBooks.length;
+  const genres = new Set(allBooks.map(b => b.genre).filter(Boolean));
+  document.getElementById('genre-count').textContent = genres.size || '—';
+  const years = new Set(allBooks.map(b => b.year_read).filter(Boolean));
+  document.getElementById('year-count').textContent = years.size || '—';
+}
 
-Put that in your **Instagram bio link**! 🎉
+function stars(n) {
+  if (!n) return '';
+  return '★'.repeat(n) + '☆'.repeat(5 - n);
+}
 
----
+function renderBooks(books) {
+  const grid = document.getElementById('grid');
+  if (!books.length) {
+    grid.innerHTML = '<div class="empty"><big>📚</big>No books yet — check back soon!</div>';
+    return;
+  }
+  grid.innerHTML = books.map((b, i) => `
+    <div class="book-card">
+      <div class="spine" style="background:${SPINE_COLORS[i % SPINE_COLORS.length]}"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          ${b.genre ? `<span class="genre-tag">${b.genre}</span>` : ''}
+          ${b.year_read ? `<span class="year-tag">${b.year_read}</span>` : ''}
+        </div>
+        <div class="book-title">${esc(b.title)}</div>
+        <div class="book-author">${esc(b.author)}</div>
+        ${b.rating ? `<div class="stars">${stars(b.rating)}</div>` : ''}
+        ${b.review ? `<div class="book-review">${esc(b.review)}</div>` : ''}
+        ${b.pdf ? `
+        <div class="card-footer">
+          <a class="pdf-btn" href="/pdf/${b.pdf}" target="_blank">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h7l3 3v9H3V2z"/><path d="M10 2v3h3"/><path d="M5.5 9.5h5M5.5 11.5h3"/></svg>
+            View PDF
+          </a>
+        </div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
 
-## How to use it
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-### Adding books (you only)
-1. Go to `your-url.onrender.com/admin`
-2. Enter your admin password
-3. Fill in the book details, upload the PDF, and hit **Add to shelf**
-
-### What visitors see
-- `your-url.onrender.com` → the public shelf
-- They can filter by genre, see your ratings & reviews, and open the PDF
-
----
-
-## Running locally (optional, for testing)
-
-```bash
-cd bookshelf
-pip install -r requirements.txt
-ADMIN_PASSWORD=mypassword python app.py
-```
-
-Then open `http://localhost:5000`
-
----
-
-## Changing your password
-
-On Render, go to your service → **Environment** → change `ADMIN_PASSWORD` → **Save** (redeploys automatically).
-
----
-
-## Notes
-
-- PDFs are stored on Render's disk. The free tier includes 1 GB of disk space.
-- `books.json` is the database — it lives on the same disk.
-- Max PDF size is 50 MB per file.
+load();
+</script>
+</body>
+</html>
